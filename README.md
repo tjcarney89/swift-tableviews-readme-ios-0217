@@ -41,7 +41,10 @@
 * The various readings/labs in Unit 4 are a good reference for how to go about creating the various readings/labs in this unit.
 * Build up to what makes a tableView useful. We have phones with screen sizes that aren't that large and there are times where we need to list information (whether it be our contacts, messages, music, e-mail) in a manner that makes it easy for us to view, but also easy for us to scroll up and down using our thumbs. The answer is Table Views.  
 
-![settings](http://i.imgur.com/ZFNqvkf.png?1)  ![email](http://i.imgur.com/UVuVn9i.png?1)  ![music](http://i.imgur.com/uyKasU6.png?1)  ![music2](http://i.imgur.com/Onhfg5v.png?1)
+![settings](http://i.imgur.com/ZFNqvkf.png?1)            ![email](http://i.imgur.com/UVuVn9i.png?1) 
+
+
+ ![music](http://i.imgur.com/uyKasU6.png?1)       ![music2](http://i.imgur.com/Onhfg5v.png?1)
 
 * OK, so know we know what a table view looks like, and examples of apps that we're familiar with that use table views.  
 * Take them through a step by step explanation with screenshots of how they can go about creating a table view.  
