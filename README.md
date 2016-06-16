@@ -56,6 +56,12 @@
 * Custom Class has to be set to a UITableViewController, I first want them to see this. In a future lesson, we can have them hook up a UITableViewController to a UIViewController (thus having them set the delegate themselves)
 * Reuseidentifier will need to be talked about.
 * IndexPath will need to be talked about.
+* This line of code will need to be explained and how powerful it is
+
+```swift
+let cell = tableView.dequeueReusableCellWithIdentifier("basicCell", forIndexPath: indexPath)
+```
+
 * **NOTE** this is a huge lesson to take in, I'm inclined to include a project with a completed project where within this reading.. we explain things in detail but make them open the xcode project and reference WHAT it is we're explaining.. that way they can explore around and see how this thing works and how it's hooked up.
 * I've included an Xcode project the student can reference as we discuss what it is they need to know in setting up a TableViewController.
 * I would not talk about or include the Navigation Controller in this reading, it will be its own reading after this.
