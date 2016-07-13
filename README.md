@@ -126,6 +126,6 @@ Take a look at `Main.storyboard` again. In Interface Builder, click once on the 
 
 Notice the `dataSource` outlet? That outlet is hooked up to the **Table View Controller**, which represents the `TableViewController` you just examined earlier in this lesson. The table view is wired up to this controller, which means that it will ask the controller—by calling particular methods—for the data necessary to draw the table view. The table view itself takes care of the rest of the work—it just needs to be hooked up to the data source, and does the rest by itself.
 
-In the next lesson, you'll see how to build your own iOS app powered by a table view yourself. For now, though, you've hopefully gained insight on how table views in iOS work.
+In future lessons, you'll see how to build your own iOS app powered by a table view yourself. For now, though, you've hopefully gained insight on how table views in iOS work.
 
 <a href='https://learn.co/lessons/TableView' data-visibility='hidden'>View this lesson on Learn.co</a>
