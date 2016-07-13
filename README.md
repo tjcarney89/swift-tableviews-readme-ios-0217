@@ -6,7 +6,11 @@
 
 ## Learning Objectives - The student should be able to...
 
-* Create content here when lesson is complete
+* Present a data set to the user in an organized way using table views
+* Know when to use table views in their iOS apps
+* Understand the various components of table views: The view, controller, cells, and data source
+* Understand how a table view creates and uses cells to show data
+* Understand the concept of reusable table view cells and how they are created and dequeued
 
 ## What Are Table Views?
 
