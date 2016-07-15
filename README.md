@@ -2,9 +2,9 @@
 
 ![Tzu](http://i.imgur.com/9k7Ar2Q.jpg?1)  
 
-> Do the difficult things while they are easy and do the great things while they are small. A journey of a thousand miles must begin with a single step. ~[Lao Tzu](https://en.wikipedia.org/wiki/Laozi)
+> Do the difficult things while they are easy and do the great things while they are small. A journey of a thousand miles must begin with a single step. -[Lao Tzu](https://en.wikipedia.org/wiki/Laozi)
 
-## Learning Objectives - The student should be able to...
+## Learning Objectives
 
 * Present a data set to the user in an organized way using table views
 * Know when to use table views in their iOS apps
@@ -34,7 +34,7 @@ Table views are backed by a _data source_. The data source provides the pieces o
 
 ## Fundamentals of Table Views
 
-As you've probably guessed by now, a table view is an type of _view_ that is provided by Cocoa Touch. It is an instance of the class `UITableView`, which is a _subclass_ of `UIView`. This means that it provides all the functionality of a basic view (`UIView`), along with some functionality of its own.
+As you've probably guessed by now, a table view is a type of _view_ that is provided by Cocoa Touch. It is an instance of the class `UITableView`, which is a _subclass_ of `UIView`. This means that it provides all the functionality of a basic view (`UIView`), along with some functionality of its own.
 
 Namely, a table view knows how to lay out data in _rows_. It gets its data from a _source_ and draws each piece of that data set into a _cell_. Table views also allow users to scroll through the entire data set, displaying a cell for each piece of data, and can even allow the user to _select_ a cell to bring up more details for that piece of data. (Think again of the Contacts app on your iPhone: You can scroll through a _list_ of contacts' names, then select one to view more details like their telephone number and email address.)
 
@@ -120,7 +120,63 @@ The final method, `tableView(_:cellForRowAtIndexPath:)`, is a bit more complicat
 
 `tableView(_:cellForRowAtIndexPath:)` does something very important: It returns an actual _cell_ for use in the table view. The "magic" is that, given a cell, the table view will know how to draw it in amongst all the other cells. Neat, huh?
 
-First, `tableView(_:cellForRowAtIndexPath:)` gets passed a `cellForRowAtIndexPath` parameter which lets the method know exactly which cell is being requested.
+How many times does `tableView(_:cellForRowAtIndexPath:)` get called? 11 times. Lets add a `print()` function inside this function and see? But, I'm going to print the `indexPath` argument that's given to us when the function is called. This `indexPath` constant is of type `NSIndexPath` This `NSIndexPath` object is able to encapsulate very important information. The `NSIndexPath` object has two computed read-only properties which are incredibly helpful for us here. 
+
+`row` - this will give us back the row for which the tableView wants us to give back a cell. If the tableView tell us it wants a cell for the 2nd row, well lets give it back a cell with data for the 2nd row.
+`section` - it will give us the section we're in. In our scenario here there will only be one.
+
+Lets print these two computed read-only properties on the `NSIndexPath` object called `indexPath` and see what gets printed to console.
+
+```swift
+ override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        
+        print("Section: \(indexPath.section) -- Row: \(indexPath.row)")
+        
+        let cell = tableView.dequeueReusableCellWithIdentifier("basicCell", forIndexPath: indexPath)
+
+        let favoriteSong = favoriteSongs[indexPath.row]
+        
+        cell.textLabel?.text = favoriteSong
+
+        return cell
+    }
+```
+
+After running our code, we should see this print to console:
+```swift
+Section: 0 -- Row: 0
+Section: 0 -- Row: 1
+Section: 0 -- Row: 2
+Section: 0 -- Row: 3
+Section: 0 -- Row: 4
+Section: 0 -- Row: 5
+Section: 0 -- Row: 6
+Section: 0 -- Row: 7
+Section: 0 -- Row: 8
+Section: 0 -- Row: 9
+Section: 0 -- Row: 10
+```
+
+Well, that `row` property on the `NSIndexPath` object seems like something we could use! Our Array called `favoriteStrings` is zero-based because it's an Array, so whenever this function is called we can take the value of this `row` property and access an element from our `favoriteSongs` array using that value as an index.
+
+The first time this function is called, `row` has a value of `0`.
+```swift
+let favoriteSong = favoriteSongs[indexPath.row]
+// the first time through, the row property is 0. This is the equivalent then of favoriteSongs[0]
+// favoriteSong has a value of "Thriller"
+```
+
+The second time this function is called, `row` has a value of `1`.
+```swift
+let favoriteSong = favoriteSongs[indexPath.row]
+// the second time through, the row property is 1. This is the equivalent then of favoriteSongs[1]
+// favoriteSong has a value of "Never Gonna Give You Up"
+```
+
+When we have a hold of the song (which in this example is just a `String`), we want to update the `cell`'s `textLabel.text` property to equal the value of our `favoriteSong` constant.
+
+After doing this we have completely configured our cell and return it back to the caller of the function. The caller of this function is the Table View. So you can think of this as a form of communication between the Table View and the View Controller. The Table View calls on this function passing in two arguments to the function, itself and the indexPath. The View Controller makes use of this information, configures a cell and returns a cell back to the Table View which is then able to display it to the user.
+
 
 ### Wiring Up the Table View
 
