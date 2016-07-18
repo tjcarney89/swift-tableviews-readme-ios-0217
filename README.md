@@ -104,7 +104,7 @@ Let's take a look at these methods in more detail.
 
 ### Table View Methods
 
-The first method, `numberOfSectionsInTableView(_:)`, returns the number of _sections_ in the tablew view. Many table views only have one section, including the one in this example project, so in this case, the method is simply returning `1`. Table views can be broken into sections, though. You can see this in the Settings app, which groups similar settings categories into sections. Each section is denoted with a large grey area. Sections can have titles, too, although the Settings app doesn't have titles for its sections.
+The first method, `numberOfSectionsInTableView(_:)`, returns the number of _sections_ in the table view. Many table views only have one section, including the one in this example project, so in this case, the method is simply returning `1`. Table views can be broken into sections, though. You can see this in the Settings app, which groups similar settings categories into sections. Each section is denoted with a large grey area. Sections can have titles, too, although the Settings app doesn't have titles for its sections.
 
 ![Settings.app](https://s3.amazonaws.com/learn-verified/ios-settings.png)
 
@@ -120,12 +120,45 @@ The final method, `tableView(_:cellForRowAtIndexPath:)`, is a bit more complicat
 
 `tableView(_:cellForRowAtIndexPath:)` does something very important: It returns an actual _cell_ for use in the table view. The "magic" is that, given a cell, the table view will know how to draw it in amongst all the other cells. Neat, huh?
 
-How many times does `tableView(_:cellForRowAtIndexPath:)` get called? 11 times. Lets add a `print()` function inside this function and see? But, I'm going to print the `indexPath` argument that's given to us when the function is called. This `indexPath` constant is of type `NSIndexPath` This `NSIndexPath` object is able to encapsulate very important information. The `NSIndexPath` object has two computed read-only properties which are incredibly helpful for us here. 
+First, `tableView(_:cellForRowAtIndexPath:)` gets passed a `cellForRowAtIndexPath` parameter which lets the method know exactly which cell is being requested. This parameter is of type `NSIndexPath`, which is a structure that contains both the _section_ and _row_ of the cell being drawn. In this example application, all that matters is the row (since your table view only has one section), which can be obtained using the `row` property.
 
-`row` - this will give us back the row for which the tableView wants us to give back a cell. If the tableView tell us it wants a cell for the 2nd row, well lets give it back a cell with data for the 2nd row.
-`section` - it will give us the section we're in. In our scenario here there will only be one.
+But first, let's talk about reusable cells.
 
-Lets print these two computed read-only properties on the `NSIndexPath` object called `indexPath` and see what gets printed to console.
+The method's first line of code is this:
+
+```swift
+let cell = tableView.dequeueReusableCellWithIdentifier("basicCell", forIndexPath: indexPath)
+```
+
+What on Earth _is_ that call?
+
+A table view has to allocate memory to store and draw every cell that the user sees on their screen at any given time. In fact, the table view creates a few cells that are above and below the currently visible screen, too, so that scrolling through the table view is fast and fluid. But the iPhone has a fairly limited amount of memory (even less in the early days of the iPhone), and it would be inefficient for the table view to allocate memory for _every_ cell, so it only allocates memory for the visible cells and a few cells immediately adjacent to the visible cells.
+
+Theoretically, when a table view needs to create a new cell, it allocates memory for the cell and then initializes it with a label or image or whatever view dicates the look of the cell. In practice, though, most cells are mostly the same except for some slightly different text, or maybe a slightly different image. Allocating and deallocating memory is a complex and time-consuming task on the iPhone, so table views try to minimize how often they have to allocate and deallocate table view cells, since there could potentially be hundreds or thousands of cells in a table view.
+
+That's where the method call `dequeueReusableCellWithIdentifier(_:forIndexPath)` comes in.
+
+Consider this: You have a table view with 100 cells. You're looking at that table view on an iPhone that can display five cells at a time. When your app starts up, the table view will create the first five cells, at indexes 0 through 4, and display them. It will then create five more cells, at indexes 5 through 9, and store them in memory, so you can quickly scroll through the view.
+
+You start scrolling, and look at the next set of five records (cells 5 through 9). The table has already created those, so it displays them quickly. While you're looking at those cells, it has already created cells 10 through 14, so you can keep scrolling. It also keeps cells 0 through 4 in memory, in case you scroll backwards.
+
+You scroll forward again. Now you're looking at cells 10 through 14. It keeps cells 5 through 9 in memory, too, just in case you scroll backwards, and it starts to create cells 15 through 19 in case you scroll forwards.
+
+Here's the important part: Instead of allocating _more_ memory for cells 15 through 19, the table view instead _reuses_, or _dequeues_, cells 0 through 4 (which it has determined it doesn't need anymore). That way, it doesn't have to create new cells from scratch, but instead can present the app with a nearly-initialized cell. All the app needs to do is change the cell's text label or update its image or update the view.
+
+`dequeueReusableCellWithIdentifier(_:forIndexPath)` is way to efficiently create and manage cells in large table views. It returns a previously-allocated but currently unused cell if one exists; otherwise, it creates and returns a newly-allocated cell.
+
+How can the table view differentiate between different types of cells, though? In other words, you may have cells that look different; how does the table view know which one to return?
+
+Every different _type_ of cell (that is, every different look or design) has a unique _identifier_. The first parameter you pass to `dequeueReusableCellWithIdentifier(_:forIndexPath)` specifies the identifier of the type of cell you want to retrieve or create. In this example, the cells in the table all have the identifier "basicCell". (Often times, the identifier of a cell is the same name as its _class_, but sometimes you want to have a more specific identifier.)
+
+The rest of this method is fairly simple. Once you have a cell (either one previously allocated, or a new one), you then retrieve its corresponding song, which is just the entry in `favoriteSongs` that corresponds to the cell's _row_. You then set the text label of the cell to the name of the song (`cell.textLabel?.text = favoriteSong`) and return the cell.
+
+Let's take a look at a more practical example of dequeueing cells in action.
+
+##### Dequeueing Cells in Action
+
+How many times does `tableView(_:cellForRowAtIndexPath:)`. It will get called eleven times, once for each cell that needs to be drawn. You can see this in action by adding some `print()` statements to `tableView(_:cellForRowAtIndexPath:)` and then running your app. In the `print()` statement, print out both the `section` and `row` of `indexPath` to see what is going on. Here is the method `tableView(_:cellForRowAtIndexPath:)` with some helpful `print()` statements added:
 
 ```swift
  override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -142,8 +175,9 @@ Lets print these two computed read-only properties on the `NSIndexPath` object c
     }
 ```
 
-After running our code, we should see this print to console:
-```swift
+After running our code, you should see this print to console:
+
+```
 Section: 0 -- Row: 0
 Section: 0 -- Row: 1
 Section: 0 -- Row: 2
@@ -157,9 +191,10 @@ Section: 0 -- Row: 9
 Section: 0 -- Row: 10
 ```
 
-Well, that `row` property on the `NSIndexPath` object seems like something we could use! Our Array called `favoriteStrings` is zero-based because it's an Array, so whenever this function is called we can take the value of this `row` property and access an element from our `favoriteSongs` array using that value as an index.
+Notice how the `row` property corresponds to an index into the `favoriteSongs` property!
 
 The first time this function is called, `row` has a value of `0`.
+
 ```swift
 let favoriteSong = favoriteSongs[indexPath.row]
 // the first time through, the row property is 0. This is the equivalent then of favoriteSongs[0]
@@ -167,16 +202,18 @@ let favoriteSong = favoriteSongs[indexPath.row]
 ```
 
 The second time this function is called, `row` has a value of `1`.
+
 ```swift
 let favoriteSong = favoriteSongs[indexPath.row]
 // the second time through, the row property is 1. This is the equivalent then of favoriteSongs[1]
 // favoriteSong has a value of "Never Gonna Give You Up"
 ```
 
-When we have a hold of the song (which in this example is just a `String`), we want to update the `cell`'s `textLabel.text` property to equal the value of our `favoriteSong` constant.
+Once you get the title of a song (which in this example is just a `String`), you assign that song title to the cell's text label's `text` property.
 
-After doing this we have completely configured our cell and return it back to the caller of the function. The caller of this function is the Table View. So you can think of this as a form of communication between the Table View and the View Controller. The Table View calls on this function passing in two arguments to the function, itself and the indexPath. The View Controller makes use of this information, configures a cell and returns a cell back to the Table View which is then able to display it to the user.
+After doing this you have completely configured the cell and returned it back to the caller of the method. The caller of this method is the table view, so you can think of this as a form of communication between the table view and the view controller. The table view calls this method, passing in itself and the `indexPath` as parameters. The view controller makes use of this information to configure a cell and returns it back to the table view, which is then able to display it to the user.
 
+And that's how the table view's data source works. Let's take a look at how you wire up a table view to a data source.
 
 ### Wiring Up the Table View
 
