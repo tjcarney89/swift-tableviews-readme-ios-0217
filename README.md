@@ -4,13 +4,17 @@
 
 > Do the difficult things while they are easy and do the great things while they are small. A journey of a thousand miles must begin with a single step. -[Lao Tzu](https://en.wikipedia.org/wiki/Laozi)
 
+## Overview 
+
+In this lesson we'll introduce you to table views. 
+
 ## Learning Objectives
 
 * Present a data set to the user in an organized way using table views
-* Know when to use table views in their iOS apps
-* Understand the various components of table views: The view, controller, cells, and data source
-* Understand how a table view creates and uses cells to show data
-* Understand the concept of reusable table view cells and how they are created and dequeued
+* Describe when to use table views in their iOS apps
+* List the various components of table views: The view, controller, cells, and data source
+* Explain how a table view creates and uses cells to show data
+* Explain reusable table view cells and how they are created and dequeued
 
 ## What Are Table Views?
 
