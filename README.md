@@ -77,30 +77,32 @@ The "magic" happens in the app's view controller. Open up `TableViewController.s
 ```swift
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         
         return 1
         
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         return favoriteSongs.count
         
     }
 
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        
-        let cell = tableView.dequeueReusableCellWithIdentifier("basicCell", forIndexPath: indexPath)
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+
+        let cell = tableView.dequeueReusableCell(withIdentifier: "basicCell", for: indexPath)
 
         let favoriteSong = favoriteSongs[indexPath.row]
         
         cell.textLabel?.text = favoriteSong
 
         return cell
+
     }
 ```
+
 
 Believe it or not, these are all the methods that are required to power a table view. The table view can use these methods to get its data set, and will do all the rest of the work itself—drawing the cells, allow the user to scroll through the table view, and so on.
 
@@ -108,7 +110,7 @@ Let's take a look at these methods in more detail.
 
 ### Table View Methods
 
-The first method, `numberOfSectionsInTableView(_:)`, returns the number of _sections_ in the table view. Many table views only have one section, including the one in this example project, so in this case, the method is simply returning `1`. Table views can be broken into sections, though. You can see this in the Settings app, which groups similar settings categories into sections. Each section is denoted with a large grey area. Sections can have titles, too, although the Settings app doesn't have titles for its sections.
+The first method, `numberOfSections(in:)`, returns the number of _sections_ in the table view. Many table views only have one section, including the one in this example project, so in this case, the method is simply returning `1`. Table views can be broken into sections, though. You can see this in the Settings app, which groups similar settings categories into sections. Each section is denoted with a large grey area. Sections can have titles, too, although the Settings app doesn't have titles for its sections.
 
 ![Settings.app](https://s3.amazonaws.com/learn-verified/ios-settings.png)
 
@@ -118,20 +120,20 @@ The next important method is `tableView(_:numberOfRowsInSection:)`. This method 
 
 The relevant bit of this method is the single line that returns the number of rows in the section. In this example app, you are creating a list of favorite songs that has been stored in the instance variable `favoriteSongs`. The number of rows—i.e., the number of pieces of data in the data set—is the number of songs stored in the `favoriteSongs` array, so this method simply returns the `count` of that array. Easy, right?
 
-The final method, `tableView(_:cellForRowAtIndexPath:)`, is a bit more complicated. There's a lot going on in this method, so let's break it down bit by bit.
+The final method, `tableView(_:cellForRowAt:)`, is a bit more complicated. There's a lot going on in this method, so let's break it down bit by bit.
 
 #### Getting a Cell
 
-`tableView(_:cellForRowAtIndexPath:)` does something very important: It returns an actual _cell_ for use in the table view. The "magic" is that, given a cell, the table view will know how to draw it in amongst all the other cells. Neat, huh?
+`tableView(_:cellForRowAt:)` does something very important: It returns an actual _cell_ for use in the table view. The "magic" is that, given a cell, the table view will know how to draw it in amongst all the other cells. Neat, huh?
 
-First, `tableView(_:cellForRowAtIndexPath:)` gets passed a `cellForRowAtIndexPath` parameter which lets the method know exactly which cell is being requested. This parameter is of type `NSIndexPath`, which is a structure that contains both the _section_ and _row_ of the cell being drawn. In this example application, all that matters is the row (since your table view only has one section), which can be obtained using the `row` property.
+First, `tableView(_:cellForRowAt:)` gets passed an `indexPath` parameter which lets the method know exactly which cell is being requested. This parameter is of type `NSIndexPath`, which is a structure that contains both the _section_ and _row_ of the cell being drawn. In this example application, all that matters is the row (since your table view only has one section), which can be obtained using the `row` property.
 
 But first, let's talk about reusable cells.
 
 The method's first line of code is this:
 
 ```swift
-let cell = tableView.dequeueReusableCellWithIdentifier("basicCell", forIndexPath: indexPath)
+let cell = tableView.dequeueReusableCell(withIdentifier: "basicCell", for: indexPath)
 ```
 
 What on Earth _is_ that call?
@@ -140,7 +142,7 @@ A table view has to allocate memory to store and draw every cell that the user s
 
 Theoretically, when a table view needs to create a new cell, it allocates memory for the cell and then initializes it with a label or image or whatever view dicates the look of the cell. In practice, though, most cells are mostly the same except for some slightly different text, or maybe a slightly different image. Allocating and deallocating memory is a complex and time-consuming task on the iPhone, so table views try to minimize how often they have to allocate and deallocate table view cells, since there could potentially be hundreds or thousands of cells in a table view.
 
-That's where the method call `dequeueReusableCellWithIdentifier(_:forIndexPath)` comes in.
+That's where the method call `dequeueReusableCell(withIdentifier:for:)` comes in.
 
 Consider this: You have a table view with 100 cells. You're looking at that table view on an iPhone that can display five cells at a time. When your app starts up, the table view will create the first five cells, at indexes 0 through 4, and display them. It will then create five more cells, at indexes 5 through 9, and store them in memory, so you can quickly scroll through the view.
 
@@ -150,11 +152,11 @@ You scroll forward again. Now you're looking at cells 10 through 14. It keeps ce
 
 Here's the important part: Instead of allocating _more_ memory for cells 15 through 19, the table view instead _reuses_, or _dequeues_, cells 0 through 4 (which it has determined it doesn't need anymore). That way, it doesn't have to create new cells from scratch, but instead can present the app with a nearly-initialized cell. All the app needs to do is change the cell's text label or update its image or update the view.
 
-`dequeueReusableCellWithIdentifier(_:forIndexPath)` is way to efficiently create and manage cells in large table views. It returns a previously-allocated but currently unused cell if one exists; otherwise, it creates and returns a newly-allocated cell.
+``dequeueReusableCell(withIdentifier:for:)`` is way to efficiently create and manage cells in large table views. It returns a previously-allocated but currently unused cell if one exists; otherwise, it creates and returns a newly-allocated cell.
 
 How can the table view differentiate between different types of cells, though? In other words, you may have cells that look different; how does the table view know which one to return?
 
-Every different _type_ of cell (that is, every different look or design) has a unique _identifier_. The first parameter you pass to `dequeueReusableCellWithIdentifier(_:forIndexPath)` specifies the identifier of the type of cell you want to retrieve or create. In this example, the cells in the table all have the identifier "basicCell". (Often times, the identifier of a cell is the same name as its _class_, but sometimes you want to have a more specific identifier.)
+Every different _type_ of cell (that is, every different look or design) has a unique _identifier_. The first parameter you pass to ``dequeueReusableCell(withIdentifier:for:)`` specifies the identifier of the type of cell you want to retrieve or create. In this example, the cells in the table all have the identifier "basicCell". (Often times, the identifier of a cell is the same name as its _class_, but sometimes you want to have a more specific identifier.)
 
 The rest of this method is fairly simple. Once you have a cell (either one previously allocated, or a new one), you then retrieve its corresponding song, which is just the entry in `favoriteSongs` that corresponds to the cell's _row_. You then set the text label of the cell to the name of the song (`cell.textLabel?.text = favoriteSong`) and return the cell.
 
@@ -162,22 +164,22 @@ Let's take a look at a more practical example of dequeueing cells in action.
 
 ##### Dequeueing Cells in Action
 
-How many times does `tableView(_:cellForRowAtIndexPath:)`. It will get called eleven times, once for each cell that needs to be drawn. You can see this in action by adding some `print()` statements to `tableView(_:cellForRowAtIndexPath:)` and then running your app. In the `print()` statement, print out both the `section` and `row` of `indexPath` to see what is going on. Here is the method `tableView(_:cellForRowAtIndexPath:)` with some helpful `print()` statements added:
+How many times does `tableView(_:cellForRowAt:)`. It will get called eleven times, once for each cell that needs to be drawn. You can see this in action by adding some `print()` statements to `tableView(_:cellForRowAt:)` and then running your app. In the `print()` statement, print out both the `section` and `row` of `indexPath` to see what is going on. Here is the method `tableView(_:cellForRowAt:)` with some helpful `print()` statements adde
+
 
 ```swift
- override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        
-        print("Section: \(indexPath.section) -- Row: \(indexPath.row)")
-        
-        let cell = tableView.dequeueReusableCellWithIdentifier("basicCell", forIndexPath: indexPath)
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "basicCell", for: indexPath)
 
         let favoriteSong = favoriteSongs[indexPath.row]
         
         cell.textLabel?.text = favoriteSong
 
         return cell
+
     }
 ```
+
 
 After running our code, you should see this print to console:
 
