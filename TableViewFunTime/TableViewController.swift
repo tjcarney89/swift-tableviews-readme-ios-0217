@@ -41,24 +41,24 @@ class TableViewController: UITableViewController {
     
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         
         return 1
         
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         return favoriteSongs.count
         
     }
 
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
                 
-        let cell = tableView.dequeueReusableCellWithIdentifier("basicCell", forIndexPath: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "basicCell", for: indexPath)
 
-        let favoriteSong = favoriteSongs[indexPath.row]
+        let favoriteSong = favoriteSongs[(indexPath as NSIndexPath).row]
         
         cell.textLabel?.text = favoriteSong
 
