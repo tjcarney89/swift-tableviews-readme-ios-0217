@@ -164,7 +164,7 @@ Let's take a look at a more practical example of dequeueing cells in action.
 
 ##### Dequeueing Cells in Action
 
-How many times does `tableView(_:cellForRowAt:)`. It will get called eleven times, once for each cell that needs to be drawn. You can see this in action by adding some `print()` statements to `tableView(_:cellForRowAt:)` and then running your app. In the `print()` statement, print out both the `section` and `row` of `indexPath` to see what is going on. Here is the method `tableView(_:cellForRowAt:)` with some helpful `print()` statements adde
+How many times does `tableView(_:cellForRowAt:)`. It will get called eleven times, once for each cell that needs to be drawn. You can see this in action by adding some `print()` statements to `tableView(_:cellForRowAt:)` and then running your app. In the `print()` statement, print out both the `section` and `row` of `indexPath` to see what is going on.
 
 
 ```swift
