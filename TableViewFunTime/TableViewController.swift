@@ -61,6 +61,8 @@ class TableViewController: UITableViewController {
         let favoriteSong = favoriteSongs[(indexPath as NSIndexPath).row]
         
         cell.textLabel?.text = favoriteSong
+        
+        print("Section: \(indexPath.section) -- Row: \(indexPath.row)")
 
         return cell
     }
